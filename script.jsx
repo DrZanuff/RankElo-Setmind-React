@@ -59,7 +59,6 @@ class Header extends React.Component{
             </nav>
 
             <div>
-                {console.log(this.state.currentPage)}
                 <Page value={this.state.currentPage} />
             </div>
 
@@ -77,6 +76,19 @@ var elements = {
     Dragon : {bg:"img/bg/Dragon.png" , badge:"img/badges/Dragon.png" , title:"img/titles/Dragon.png"}
 }
 
+var sampleData  = {
+   Wolf : [
+    ["Guilherme de Almeida", 1508],
+    ["Fernando Siqueira", 500],
+    ["Atila Douglas", 350],
+   ],
+   Eagle : [
+    ["Bruno Souza", 300],
+    ["Paulo Couto", 250],
+    ["Dominick Williams", 100]
+   ]
+}
+
 function Page(props){
 
     const bg = (
@@ -91,6 +103,10 @@ function Page(props){
                     <div className="title">
                         <img src={props.value.title} />
                     </div>
+                    <LineElement pos={"Up"}/>
+                    <TitleElement />
+                    <LineElement pos={"Bot"}/>
+                    <DataBody />
                    
                     
 
@@ -102,10 +118,67 @@ function Page(props){
     )
 }
 
-function App(){
+function LineElement(props){
     return(
-        <Header />
+    <div className={ props.pos == "Up" ? "titleLineUp" : "titleLineBot"}>
+         <hr/>
+     </div>
     )
+}
+
+function TitleElement(){
+    return(
+        <div className="title-bar font">
+            <h1>#</h1>
+            <h1>Nome</h1>
+            <h1>Pontos</h1>
+        </div>
+    )
+}
+
+function DataBody(){
+    return(
+        <div className="dataBody">
+           {generateTemplate()}
+        </div>
+    )
+}
+
+function Entry(props){
+    return(
+        <div className="entry">
+            <h1>#</h1>
+            <h1>Nome</h1>
+            <h1>Pontos</h1>
+        </div>
+    )
+}
+
+function generateTemplate(){
+    let content = []
+    for (let i = 0; i < 18 ; i++){
+        content.push(<Entry key={i} />)
+    }
+
+    return content
+}
+
+class App extends React.Component{
+
+    componentDidMount(){
+        let total = $(".dataBody").height()
+        let size = $(".entry").length
+        $(".entry").height((total/size)*58)
+        const clampNumber = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
+        let fontSize = clampNumber( (total/size) * 40 , 30 , 50)
+        $(".entry>h1").css("font-size",fontSize)
+    }
+
+    render(){
+        return(
+            <Header />
+        )
+    }
 }
 
 ReactDOM.render(
