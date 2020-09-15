@@ -105,15 +105,30 @@ body{
     /* border-width: 2px;
     border-style: solid;
     border-color: rgb(224, 64, 64); */
+    position: relative;
     display: grid;
     grid-template-columns: 1fr 4fr 1fr;
     height: 20%;
     align-content: center;
     font-family: aldritch;
-    color: white;
     margin-bottom: 2px;
 }
 
-.entry h1{
-    
+.strong{
+    color: white;
+}
+
+.light{
+    color:gray;
+}
+
+.bgline{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: calc(50% - 600px);
+    max-width: 1200px;
+    border-bottom-width: 1px ;
+    border-bottom-color:white;
+    border-bottom-style: solid;  
 }

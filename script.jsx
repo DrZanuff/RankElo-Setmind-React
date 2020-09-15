@@ -146,18 +146,24 @@ function DataBody(){
 
 function Entry(props){
     return(
-        <div className="entry">
+        <div className={"entry " + props.value}>
             <h1>#</h1>
             <h1>Nome</h1>
             <h1>Pontos</h1>
+            <hr className="bgline" />
         </div>
     )
 }
 
 function generateTemplate(){
     let content = []
-    for (let i = 0; i < 18 ; i++){
-        content.push(<Entry key={i} />)
+    for (let i = 0; i < 48 ; i++){
+        if (i % 2 == 0){
+            content.push(<Entry key={i} value="strong"/>)
+        }
+        else{
+            content.push(<Entry key={i} value="light" />)
+        }
     }
 
     return content
@@ -172,6 +178,7 @@ class App extends React.Component{
         const clampNumber = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
         let fontSize = clampNumber( (total/size) * 40 , 30 , 50)
         $(".entry>h1").css("font-size",fontSize)
+        $(".bgline").css("top", (size/2) )
     }
 
     render(){
