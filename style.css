@@ -1,3 +1,45 @@
 body{
     background-color: black;
 }
+
+.bg{
+    position: relative;
+    text-align: center;
+    z-index: -2;
+}
+
+.line hr{
+    position: absolute;
+    top : 120px;
+    width: 100%;
+    left : calc( (50% - 620px) );
+    max-width: 1240px;
+    border-bottom-width: 1px ;
+    border-bottom-color:white;
+    border-bottom-style: solid;    
+    text-align: center;
+}
+
+.badge{
+    position: absolute;
+    top: 5px;
+    left: calc(50% - 145px);
+}
+
+.title{
+    position: absolute;
+    top: 250px;
+    left: 50%;
+    left: calc(50% - 152px);
+
+
+}
+
+.title img{
+    width: 304px;
+    height: 140px;
+}
+
+.bgImg{
+    z-index: -1;
+}
