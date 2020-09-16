@@ -120,7 +120,7 @@ body{
 }
 
 .light{
-    color:gray;
+    color: rgb(153, 153, 153);
 }
 
 .bgImgLine{
@@ -132,4 +132,9 @@ body{
 
 #spin{
     text-align: center;
+}
+
+#spinLoad{
+    text-align: center;
+    display: none;
 }

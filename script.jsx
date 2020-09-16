@@ -19,6 +19,7 @@ class Header extends React.Component{
 
     clicked(value){
         this.setState( {currentPage : value} )
+        showSpin(true)
     }
 
     render(){
@@ -70,6 +71,10 @@ class Header extends React.Component{
 
             </nav>
 
+            <div id="spinLoad">
+                    <div className="spinner-grow text-light" role="status" />
+            </div>
+
             <div>
                 {
                 this.state.isLoaded ? 
@@ -103,7 +108,7 @@ function Page(props){
                     <div className="line">
                         <hr/>
                     </div>
-                    <img className="bgImg" src={props.value.bg} />
+                    <img className="bgImg" onLoad={ showSpin(false) } src={props.value.bg} />
                     <div className="badge" >
                         <img src={props.value.badge} />
                     </div> 
@@ -123,6 +128,15 @@ function Page(props){
     return(
         bg
     )
+}
+
+function showSpin(visible){
+    if (visible){
+        $(".spinLoad").css("display","none")
+    }
+    else{
+        $(".spinLoad").css("display","unset")
+    }
 }
 
 function LineElement(props){
