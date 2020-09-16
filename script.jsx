@@ -6,7 +6,8 @@ class Header extends React.Component{
             currentPage : elements.Wolf,
             error : null,
             isLoaded : false,
-            data : {}
+            data : {},
+            bgLoaded: false
         }
     }
 
@@ -18,8 +19,12 @@ class Header extends React.Component{
     }
 
     clicked(value){
-        this.setState( {currentPage : value} )
-        showSpin(true)
+        this.setState( {currentPage : value , bgLoaded : false } )
+        
+    }
+
+    bgHasLoaded(){
+        this.setState( {bgLoaded : true} )
     }
 
     render(){
@@ -71,19 +76,27 @@ class Header extends React.Component{
 
             </nav>
 
-            <div id="spinLoad">
-                    <div className="spinner-grow text-light" role="status" />
-            </div>
-
             <div>
                 {
-                this.state.isLoaded ? 
-                <Page value={this.state.currentPage} data={this.state.data} /> :
+                this.state.isLoaded
+                ?
+                <div>
+                    {
+                        this.state.bgLoaded && <Page value={this.state.currentPage} data={this.state.data} bgLoad = { () => this.bgHasLoaded() }/>
+                    }
+                    {
+                     !this.state.bgLoaded &&
+                        <div className="d-flex justify-content-center">
+                            <div id="spinLoad" className="spinner-grow text-light" role="status" />
+                        </div>
+                    }
+                </div>
+                :
                 <div id="spin">
                     <div className="spinner-border text-light" role="status" />
                 </div>
                 
-                 }
+                }
                 
             </div>
 
@@ -108,7 +121,7 @@ function Page(props){
                     <div className="line">
                         <hr/>
                     </div>
-                    <img className="bgImg" onLoad={ showSpin(false) } src={props.value.bg} />
+                    <img className="bgImg" onLoad={ props.bgLoad } src={props.value.bg} />
                     <div className="badge" >
                         <img src={props.value.badge} />
                     </div> 
@@ -132,10 +145,12 @@ function Page(props){
 
 function showSpin(visible){
     if (visible){
-        $(".spinLoad").css("display","none")
+        $("#spinLoad").css("display","unset")
+        $(".bg").children().hide()
     }
     else{
-        $(".spinLoad").css("display","unset")
+        $("#spinLoad").css("display","none")
+        $(".bg").children().show()
     }
 }
 
