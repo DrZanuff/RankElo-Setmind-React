@@ -108,10 +108,11 @@ body{
     position: relative;
     display: grid;
     grid-template-columns: 1fr 4fr 1fr;
-    height: 20%;
+    /* height: 20%; */
     align-content: center;
     font-family: aldritch;
-    margin-bottom: 2px;
+    margin-bottom: 3px;
+    z-index: 1;
 }
 
 .strong{
@@ -122,13 +123,13 @@ body{
     color:gray;
 }
 
-.bgline{
+.bgImgLine{
     position: absolute;
-    width: 100%;
-    height: 100%;
-    left: calc(50% - 600px);
-    max-width: 1200px;
-    border-bottom-width: 1px ;
-    border-bottom-color:white;
-    border-bottom-style: solid;  
+    top: 50%;
+    left: calc(50% - 550px);
+    z-index: 0;
+}
+
+#spin{
+    text-align: center;
 }

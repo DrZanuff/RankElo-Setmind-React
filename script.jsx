@@ -2,7 +2,19 @@ class Header extends React.Component{
 
     constructor(props){
         super(props)
-        this.state = { currentPage : elements.Wolf }
+        this.state = { 
+            currentPage : elements.Wolf,
+            error : null,
+            isLoaded : false,
+            data : {}
+        }
+    }
+
+    componentDidMount(){
+        fetch("https://script.google.com/macros/s/AKfycbxzZmE--TzcbE6VnHaFGjbjwwXXeVQ6U4jiSbNcDIZGq83NBSUN/exec")
+        .then( response => response.json() )
+        .then( result =>{ this.setState( {isLoaded : true, data : result } ) }
+        )
     }
 
     clicked(value){
@@ -59,7 +71,15 @@ class Header extends React.Component{
             </nav>
 
             <div>
-                <Page value={this.state.currentPage} />
+                {
+                this.state.isLoaded ? 
+                <Page value={this.state.currentPage} data={this.state.data} /> :
+                <div id="spin">
+                    <div className="spinner-border text-light" role="status" />
+                </div>
+                
+                 }
+                
             </div>
 
         </div>
@@ -69,24 +89,11 @@ class Header extends React.Component{
 }
 
 var elements = {
-    Wolf   : {bg:"img/bg/Wolf.png"   , badge:"img/badges/Wolf.png"   , title:"img/titles/Wolf.png"  },
-    Eagle  : {bg:"img/bg/Eagle.png"  , badge:"img/badges/Eagle.png"  , title:"img/titles/Eagle.png" },
-    Bear   : {bg:"img/bg/Bear.png"   , badge:"img/badges/Bear.png"   , title:"img/titles/Bear.png"  },
-    Lion   : {bg:"img/bg/Lion.png"   , badge:"img/badges/Lion.png"   , title:"img/titles/Lion.png"  },
-    Dragon : {bg:"img/bg/Dragon.png" , badge:"img/badges/Dragon.png" , title:"img/titles/Dragon.png"}
-}
-
-var sampleData  = {
-   Wolf : [
-    ["Guilherme de Almeida", 1508],
-    ["Fernando Siqueira", 500],
-    ["Atila Douglas", 350],
-   ],
-   Eagle : [
-    ["Bruno Souza", 300],
-    ["Paulo Couto", 250],
-    ["Dominick Williams", 100]
-   ]
+    Wolf   : {bg:"img/bg/Wolf.png"   , badge:"img/badges/Wolf.png"   , title:"img/titles/Wolf.png"  , name:"Wolf"  },
+    Eagle  : {bg:"img/bg/Eagle.png"  , badge:"img/badges/Eagle.png"  , title:"img/titles/Eagle.png" , name:"Eagle" },
+    Bear   : {bg:"img/bg/Bear.png"   , badge:"img/badges/Bear.png"   , title:"img/titles/Bear.png"  , name:"Bear"  },
+    Lion   : {bg:"img/bg/Lion.png"   , badge:"img/badges/Lion.png"   , title:"img/titles/Lion.png"  , name:"Lion"  },
+    Dragon : {bg:"img/bg/Dragon.png" , badge:"img/badges/Dragon.png" , title:"img/titles/Dragon.png", name:"Dragon"}
 }
 
 function Page(props){
@@ -106,7 +113,7 @@ function Page(props){
                     <LineElement pos={"Up"}/>
                     <TitleElement />
                     <LineElement pos={"Bot"}/>
-                    <DataBody />
+                    <DataBody data={props.data[props.value.name]} size={ formatEntrySize(props.data[props.value.name].length )}/>
                    
                     
 
@@ -136,56 +143,82 @@ function TitleElement(){
     )
 }
 
-function DataBody(){
-    return(
-        <div className="dataBody">
-           {generateTemplate()}
-        </div>
-    )
+class DataBody extends React.Component{
+    constructor(props){
+        super(props);
+    }
+    
+
+    render(props){
+        return(
+            <div className="dataBody">
+                {generateTemplate(this.props.data , this.props.size)}
+            </div>
+        )
+    }
 }
 
 function Entry(props){
     return(
-        <div className={"entry " + props.value}>
-            <h1>#</h1>
-            <h1>Nome</h1>
-            <h1>Pontos</h1>
-            <hr className="bgline" />
+        <div style={ {height:props.h} } className={"entry " + props.value}>
+            <h1 style={ {fontSize:props.fontsize} } >{props.pos}</h1>
+            <h1 style={ {fontSize:props.fontsize} }  >{props.name}</h1>
+            <h1 style={ {fontSize:props.fontsize} } >{props.points}</h1>
+            <img className="bgImgLine" src="img/bgline.png" />
         </div>
     )
 }
 
-function generateTemplate(){
+function generateTemplate(data , size){
     let content = []
-    for (let i = 0; i < 48 ; i++){
+    for (let i = 0; i < data.length ; i++){
         if (i % 2 == 0){
-            content.push(<Entry key={i} value="strong"/>)
+            content.push(
+                <Entry
+                key={i}
+                pos={i+1}
+                name={data[i][0]}
+                points={data[i][1]}
+                value="strong"
+                h={ size.height }
+                fontsize={size.fontSize} />
+            )
         }
         else{
-            content.push(<Entry key={i} value="light" />)
+            content.push(
+            <Entry
+            key={i}
+            pos={i+1}
+            name={data[i][0]}
+            points={data[i][1]}
+            value="light"
+            h={ size.height }
+            fontsize={size.fontSize} />
+            )
         }
     }
 
     return content
 }
 
-class App extends React.Component{
 
-    componentDidMount(){
-        let total = $(".dataBody").height()
-        let size = $(".entry").length
-        $(".entry").height((total/size)*58)
-        const clampNumber = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
-        let fontSize = clampNumber( (total/size) * 40 , 30 , 50)
-        $(".entry>h1").css("font-size",fontSize)
-        $(".bgline").css("top", (size/2) )
-    }
+function formatEntrySize(len){
+    let total = 1300
+    let size = len
+    const clampNumber = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
+
+    let styles = {height:(total/size) , fontSize : clampNumber( (total/size) * 40 , 30 , 50)  }
+    return styles 
+}
+
+class App extends React.Component{
 
     render(){
         return(
             <Header />
         )
     }
+    
 }
 
 ReactDOM.render(
