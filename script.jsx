@@ -1,3 +1,7 @@
+function loadImgs(){
+
+}
+
 class Header extends React.Component{
 
     constructor(props){
@@ -7,8 +11,15 @@ class Header extends React.Component{
             error : null,
             isLoaded : false,
             data : {},
-            bgLoaded: false
+            bgLoaded: false,
+            progress: 0,
+            bg: null,
+            badge : null,
+            title : null
         }
+        this.bgRef = React.createRef();
+        this.badgeRef = React.createRef();
+        this.titleRef = React.createRef();
     }
 
     componentDidMount(){
@@ -16,16 +27,56 @@ class Header extends React.Component{
         .then( response => response.json() )
         .then( result =>{ this.setState( {isLoaded : true, data : result } ) }
         )
+
+        this.loadImgs()
+    }
+
+    loadImgs(){
+        this.setState( { progress : 0 } )
+
+        //LOAD BG
+        const imgBg = new Image()
+        imgBg.src = this.state.currentPage.bg
+        imgBg.onload = () => {
+            this.setState( {progress : this.state.progress+1 , bg : imgBg} )
+            this.bgRef.current = imgBg
+            this.checkProgress()
+        }
+        //LOAD BADGE
+        const imgBadge = new Image()
+        imgBadge.src = this.state.currentPage.badge
+        imgBadge.onload = () => {
+            this.setState( {progress : this.state.progress+1 , badge : imgBadge} )
+            this.badgeRef.current = imgBadge
+            this.checkProgress()
+        }
+
+        //LOAD TITLE
+        const imgTitle = new Image()
+        imgTitle.src = this.state.currentPage.title
+        imgTitle.onload = () => {
+            this.setState( {progress : this.state.progress+1 , title : imgTitle} )
+            this.titleRef.current = imgTitle
+            this.checkProgress()
+        }
+    }
+
+    checkProgress(){
+        console.log(this.state.progress)
+        if(this.state.progress == 3){
+            this.setState( { bgLoaded : true } )
+        }
     }
 
     clicked(value){
         this.setState( {currentPage : value , bgLoaded : false } )
-        
+        this.loadImgs()
     }
 
-    bgHasLoaded(){
-        this.setState( {bgLoaded : true} )
-    }
+    // bgHasLoaded(){
+    //     console.log("Entrei aqui! bgHasLoaded")
+    //     this.setState( {bgLoaded : true} )
+    // }
 
     render(){
         return(
@@ -81,14 +132,22 @@ class Header extends React.Component{
                 this.state.isLoaded
                 ?
                 <div>
+                    {this.state.bgLoaded == true && <Page 
+                                                    value={this.state.currentPage}
+                                                    data={this.state.data}
+                                                    fileBg={this.state.bg}
+                                                    fileBadge={this.state.badge}
+                                                    fileTitle={this.state.title}
+                                                    /*fileBg={this.bgRef}
+                                                    fileBadge={this.badgeRef}
+                                                    fileTitle={this.titleRef} */
+                                                    />}
                     {
-                        this.state.bgLoaded && <Page value={this.state.currentPage} data={this.state.data} bgLoad = { () => this.bgHasLoaded() }/>
-                    }
-                    {
-                     !this.state.bgLoaded &&
-                        <div className="d-flex justify-content-center">
-                            <div id="spinLoad" className="spinner-grow text-light" role="status" />
-                        </div>
+                    this.state.bgLoaded == false &&
+                    <div className="d-flex justify-content-center">
+                        {console.log("Spin Aqui!")}
+                        <div id="spinLoad" className="spinner-grow text-light" role="status" />
+                    </div>
                     }
                 </div>
                 :
@@ -100,7 +159,7 @@ class Header extends React.Component{
                 
             </div>
 
-        </div>
+            </div>
 
         )
     }
@@ -114,19 +173,29 @@ var elements = {
     Dragon : {bg:"img/bg/Dragon.png" , badge:"img/badges/Dragon.png" , title:"img/titles/Dragon.png", name:"Dragon"}
 }
 
-function Page(props){
+class Page extends React.Component{
 
-    const bg = (
+    constructor(props){
+        super(props)
+    }
+
+    render(){
+        return(
                 <div className="bg">
                     <div className="line">
                         <hr/>
                     </div>
-                    <img className="bgImg" onLoad={ props.bgLoad } src={props.value.bg} />
+                    {/*props.fileBg*/}
+                    <img className="bgImg" src={props.value.bg} />
+                    {/* <ImageRef vanillaChildren={props.fileBg} /> */}
                     <div className="badge" >
+                        {/*props.fileBadge*/}
                         <img src={props.value.badge} />
+                        {/* <ImageRef vanillaChildren={props.fileBadge} /> */}
                     </div> 
                     <div className="title">
                         <img src={props.value.title} />
+                        {/* <ImageRef vanillaChildren={props.fileTitle} />*/}
                     </div>
                     <LineElement pos={"Up"}/>
                     <TitleElement />
@@ -136,23 +205,29 @@ function Page(props){
                     
 
                 </div>
-    )
-
-    return(
-        bg
-    )
+            )
+    }   
+    
 }
 
-function showSpin(visible){
-    if (visible){
-        $("#spinLoad").css("display","unset")
-        $(".bg").children().hide()
+class ImageRef extends React.Component{
+    
+    render(){
+        return(  <img ref={  ref => ref.appendChild(this.props.vanillaChildren)  } />  )
     }
-    else{
-        $("#spinLoad").css("display","none")
-        $(".bg").children().show()
-    }
+
 }
+
+// function showSpin(visible){
+//     if (visible){
+//         $("#spinLoad").css("display","unset")
+//         $(".bg").children().hide()
+//     }
+//     else{
+//         $("#spinLoad").css("display","none")
+//         $(".bg").children().show()
+//     }
+// }
 
 function LineElement(props){
     return(
