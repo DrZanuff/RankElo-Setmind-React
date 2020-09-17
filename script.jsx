@@ -1,7 +1,3 @@
-function loadImgs(){
-
-}
-
 class Header extends React.Component{
 
     constructor(props){
@@ -10,16 +6,9 @@ class Header extends React.Component{
             currentPage : elements.Wolf,
             error : null,
             isLoaded : false,
-            data : {},
-            bgLoaded: false,
-            progress: 0,
-            bg: null,
-            badge : null,
-            title : null
+            data : {}
         }
-        this.bgRef = React.createRef();
-        this.badgeRef = React.createRef();
-        this.titleRef = React.createRef();
+        this.update = React.createRef()
     }
 
     componentDidMount(){
@@ -27,56 +16,19 @@ class Header extends React.Component{
         .then( response => response.json() )
         .then( result =>{ this.setState( {isLoaded : true, data : result } ) }
         )
-
-        this.loadImgs()
     }
 
-    loadImgs(){
-        this.setState( { progress : 0 } )
+    // resetLoad(resetFunc){
 
-        //LOAD BG
-        const imgBg = new Image()
-        imgBg.src = this.state.currentPage.bg
-        imgBg.onload = () => {
-            this.setState( {progress : this.state.progress+1 , bg : imgBg} )
-            this.bgRef.current = imgBg
-            this.checkProgress()
-        }
-        //LOAD BADGE
-        const imgBadge = new Image()
-        imgBadge.src = this.state.currentPage.badge
-        imgBadge.onload = () => {
-            this.setState( {progress : this.state.progress+1 , badge : imgBadge} )
-            this.badgeRef.current = imgBadge
-            this.checkProgress()
-        }
+    //     resetFunc(currentPage.name)
 
-        //LOAD TITLE
-        const imgTitle = new Image()
-        imgTitle.src = this.state.currentPage.title
-        imgTitle.onload = () => {
-            this.setState( {progress : this.state.progress+1 , title : imgTitle} )
-            this.titleRef.current = imgTitle
-            this.checkProgress()
-        }
-    }
-
-    checkProgress(){
-        console.log(this.state.progress)
-        if(this.state.progress == 3){
-            this.setState( { bgLoaded : true } )
-        }
-    }
+    // }
 
     clicked(value){
-        this.setState( {currentPage : value , bgLoaded : false } )
-        this.loadImgs()
+        this.update.current.resetProgress(value.name)
+        this.setState( {currentPage : value } )
+        
     }
-
-    // bgHasLoaded(){
-    //     console.log("Entrei aqui! bgHasLoaded")
-    //     this.setState( {bgLoaded : true} )
-    // }
 
     render(){
         return(
@@ -131,30 +83,15 @@ class Header extends React.Component{
                 {
                 this.state.isLoaded
                 ?
-                <div>
-                    {this.state.bgLoaded == true && <Page 
-                                                    value={this.state.currentPage}
-                                                    data={this.state.data}
-                                                    fileBg={this.state.bg}
-                                                    fileBadge={this.state.badge}
-                                                    fileTitle={this.state.title}
-                                                    /*fileBg={this.bgRef}
-                                                    fileBadge={this.badgeRef}
-                                                    fileTitle={this.titleRef} */
-                                                    />}
-                    {
-                    this.state.bgLoaded == false &&
-                    <div className="d-flex justify-content-center">
-                        {console.log("Spin Aqui!")}
-                        <div id="spinLoad" className="spinner-grow text-light" role="status" />
-                    </div>
-                    }
-                </div>
+                <Page 
+                value={this.state.currentPage} 
+                data={this.state.data}
+                ref={ this.update }
+                />
                 :
                 <div id="spin">
                     <div className="spinner-border text-light" role="status" />
                 </div>
-                
                 }
                 
             </div>
@@ -177,57 +114,73 @@ class Page extends React.Component{
 
     constructor(props){
         super(props)
+        this.state = { progress : 0 , fullyLoaded : false , prev : "Wolf"  }
+    }
+
+    checkProgress(){
+        this.setState( {  progress : this.state.progress+1 } )
+
+        if(this.state.progress >= 2){
+            this.setState( {fullyLoaded : true} )
+        }
+
+
+    }
+
+    resetProgress(val){
+        if (val !=  this.props.value.name){
+            this.setState( { progress : 0 , fullyLoaded : false } )
+        }
     }
 
     render(){
-        return(
-                <div className="bg">
+        return( 
+            <div className="bg">
+
+                {this.state.fullyLoaded == false && 
+                <div className="d-flex justify-content-center">
+                    <div id="spinLoad" className="spinner-grow text-light" role="status" />
+                </div>
+                }
+
+                <div style = { {"opacity" : this.state.fullyLoaded ? 1 : 0} } >
+
                     <div className="line">
                         <hr/>
                     </div>
-                    {/*props.fileBg*/}
-                    <img className="bgImg" src={props.value.bg} />
-                    {/* <ImageRef vanillaChildren={props.fileBg} /> */}
-                    <div className="badge" >
-                        {/*props.fileBadge*/}
-                        <img src={props.value.badge} />
-                        {/* <ImageRef vanillaChildren={props.fileBadge} /> */}
-                    </div> 
-                    <div className="title">
-                        <img src={props.value.title} />
-                        {/* <ImageRef vanillaChildren={props.fileTitle} />*/}
-                    </div>
-                    <LineElement pos={"Up"}/>
-                    <TitleElement />
-                    <LineElement pos={"Bot"}/>
-                    <DataBody data={props.data[props.value.name]} size={ formatEntrySize(props.data[props.value.name].length )}/>
-                   
-                    
 
+                    <img 
+                    className="bgImg" 
+                    src={this.props.value.bg} 
+                    onLoad={ ()=>{ this.checkProgress() } } 
+
+                    />
+
+                    <div className="badge" >
+                        <img 
+                        src={this.props.value.badge} 
+                        onLoad={ ()=>{ this.checkProgress() } } 
+                        />
+                    </div> 
+
+                    <div className="title">
+                        <img 
+                        src={this.props.value.title} 
+                        onLoad={ ()=>{ this.checkProgress() } } 
+                        />
+                    </div>
+
+                    <LineElement pos={"Up"} />
+                    <TitleElement />
+                    <LineElement />
+                    <DataBody data={this.props.data[this.props.value.name]} size={ formatEntrySize(this.props.data[this.props.value.name].length )}/>
                 </div>
+
+            </div>
             )
     }   
     
 }
-
-class ImageRef extends React.Component{
-    
-    render(){
-        return(  <img ref={  ref => ref.appendChild(this.props.vanillaChildren)  } />  )
-    }
-
-}
-
-// function showSpin(visible){
-//     if (visible){
-//         $("#spinLoad").css("display","unset")
-//         $(".bg").children().hide()
-//     }
-//     else{
-//         $("#spinLoad").css("display","none")
-//         $(".bg").children().show()
-//     }
-// }
 
 function LineElement(props){
     return(
