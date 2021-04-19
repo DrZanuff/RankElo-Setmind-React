@@ -264,7 +264,7 @@ function formatEntrySize(len){
     let size = len
     const clampNumber = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
 
-    let styles = {height:(total/size) , fontSize : clampNumber( (total/size) * 20 , 8 , 50)  }
+    let styles = {height:(total/size) , fontSize : clampNumber( (total/size) * 5 , 5 , 20)  }
     return styles 
 }
 
