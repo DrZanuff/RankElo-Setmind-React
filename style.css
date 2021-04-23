@@ -109,7 +109,7 @@ body{
     display: grid;
     grid-template-columns: 1fr 4fr 1fr;
     /* height: 20%; */
-    align-content: center;
+    align-content: flex-start;
     font-family: aldritch;
     margin-bottom: 3px;
     z-index: 1;
