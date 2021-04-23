@@ -12,7 +12,7 @@ class Header extends React.Component{
     }
 
     componentDidMount(){
-        fetch("https://script.google.com/macros/s/AKfycbxzZmE--TzcbE6VnHaFGjbjwwXXeVQ6U4jiSbNcDIZGq83NBSUN/exec")
+        fetch("https://script.google.com/macros/s/AKfycby76cyIanXEIH9rCMnXxMC0L9vBwkz5lKtkhY-v4CtDD28bwoib8f3NHUPuDgjcK6AycA/exec")
         .then( response => response.json() )
         .then( result =>{ this.setState( {isLoaded : true, data : result } ) }
         )
