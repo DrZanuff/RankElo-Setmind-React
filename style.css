@@ -109,6 +109,7 @@ body{
     display: grid;
     grid-template-columns: 1fr 4fr 1fr;
     /* height: 20%; */
+    max-height: 48px;
     align-content: flex-start;
     font-family: aldritch;
     margin-bottom: 3px;
